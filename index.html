@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Co-op Tetris (1-4 Players)</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app">
+    <section id="titleScreen" class="screen active panel">
+      <h1>Co-op Tetris</h1>
+      <p class="subtitle">Play together or battle in 2v2. Human and bot players can mix freely.</p>
+
+      <div class="grid-form">
+        <label for="modeSelect">Mode</label>
+        <select id="modeSelect">
+          <option value="coop" selected>Co-op (Shared board)</option>
+          <option value="versus">2v2 (Team vs Team)</option>
+        </select>
+
+        <label for="playerCount">Players (co-op)</label>
+        <select id="playerCount">
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4" selected>4</option>
+        </select>
+
+        <label for="speedSelect">Speed</label>
+        <select id="speedSelect">
+          <option value="slow">Slow</option>
+          <option value="normal" selected>Normal</option>
+          <option value="fast">Fast</option>
+          <option value="very_fast">Very Fast</option>
+          <option value="insane">Insane</option>
+          <option value="absurd">Really, Really Fast</option>
+        </select>
+      </div>
+
+      <h2>Slots</h2>
+      <div class="slots" id="slots"></div>
+
+      <div class="button-row">
+        <button id="startBtn" type="button">Start Game</button>
+      </div>
+
+      <div class="help">
+        <h2>Keyboard Controls</h2>
+        <ul>
+          <li>P1: A / D / S / W</li>
+          <li>P2: J / L / K / I</li>
+          <li>P3: F / H / G / T</li>
+          <li>P4: Left / Right / Down / Up</li>
+        </ul>
+        <p>Gamepad: left stick or D-pad moves, down speeds drop, A/B/X/Y rotates clockwise.</p>
+      </div>
+    </section>
+
+    <section id="gameScreen" class="screen panel">
+      <div class="game-topbar">
+        <div>Mode: <span id="modeLabel"></span></div>
+        <div>Status: <span id="status">Running</span></div>
+        <div>Score: <span id="score">0</span></div>
+        <div>Lines: <span id="lines">0</span></div>
+      </div>
+      <div id="teamStats" class="team-stats"></div>
+      <section class="game-layout">
+        <aside id="nextLeft" class="next-side"></aside>
+        <section id="boardWrap" class="board-wrap">
+          <canvas id="gameCanvas" width="1200" height="820"></canvas>
+        </section>
+        <aside id="nextRight" class="next-side"></aside>
+      </section>
+      <div class="button-row">
+        <button id="backToTitleBtn" type="button">Back to Title</button>
+      </div>
+    </section>
+
+    <section id="gameOverScreen" class="screen panel">
+      <h1>Game Over</h1>
+      <p id="resultHeadline" class="subtitle"></p>
+      <div id="summary" class="summary"></div>
+      <div class="button-row">
+        <button id="playAgainBtn" type="button">Play Again</button>
+        <button id="titleBtn" type="button">Title Screen</button>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
