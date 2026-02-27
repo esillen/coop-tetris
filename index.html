@@ -4,11 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Co-op Tetris (1-4 Players)</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <main class="app">
     <section id="titleScreen" class="screen active panel">
+      <div class="title-kicker">Neon Co-op Arena</div>
       <h1>Co-op Tetris</h1>
       <p class="subtitle">Play together or battle in 2v2. Human and bot players can mix freely.</p>
 
@@ -78,8 +80,10 @@
     </section>
 
     <section id="gameOverScreen" class="screen panel">
-      <h1>Game Over</h1>
-      <p id="resultHeadline" class="subtitle"></p>
+      <div class="gameover-head">
+        <h1>Game Over</h1>
+        <p id="resultHeadline" class="subtitle"></p>
+      </div>
       <div id="summary" class="summary"></div>
       <div class="button-row">
         <button id="playAgainBtn" type="button">Play Again</button>

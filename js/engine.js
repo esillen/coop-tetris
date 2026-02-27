@@ -307,6 +307,9 @@ function countFilledInRow(row) {
 function analyzeGrid(grid, cols, rows) {
   const heights = Array(cols).fill(0);
   let holes = 0;
+  let buriedHoleDepth = 0;
+  let deepHoles = 0;
+  let pocketHoles = 0;
   let maxHeight = 0;
   let nearFullRows = 0;
 
@@ -321,8 +324,20 @@ function analyzeGrid(grid, cols, rows) {
     if (top !== -1) {
       heights[x] = rows - top;
       maxHeight = Math.max(maxHeight, heights[x]);
+      let filledSeen = 0;
       for (let y = top + 1; y < rows; y += 1) {
-        if (!grid[y][x]) holes += 1;
+        if (grid[y][x]) {
+          filledSeen += 1;
+          continue;
+        }
+
+        holes += 1;
+        buriedHoleDepth += filledSeen;
+        if (filledSeen >= 3) deepHoles += 1;
+
+        const leftBlocked = x === 0 || !!grid[y][x - 1];
+        const rightBlocked = x === cols - 1 || !!grid[y][x + 1];
+        if (leftBlocked && rightBlocked) pocketHoles += 1;
       }
     }
   }
@@ -339,14 +354,24 @@ function analyzeGrid(grid, cols, rows) {
     if (filled >= cols - 2 && filled < cols) nearFullRows += 1;
   }
 
-  return { holes, maxHeight, aggregateHeight, bumpiness, nearFullRows };
+  return {
+    holes,
+    buriedHoleDepth,
+    deepHoles,
+    pocketHoles,
+    maxHeight,
+    aggregateHeight,
+    bumpiness,
+    nearFullRows,
+  };
 }
 
 function estimateDanger(metrics, rows) {
   const heightRisk = metrics.maxHeight / rows;
   const holeRisk = Math.min(1, metrics.holes / 22);
+  const buriedRisk = Math.min(1, metrics.buriedHoleDepth / 52);
   const roughRisk = Math.min(1, metrics.bumpiness / 38);
-  return heightRisk * 0.58 + holeRisk * 0.3 + roughRisk * 0.12;
+  return heightRisk * 0.5 + holeRisk * 0.23 + buriedRisk * 0.17 + roughRisk * 0.1;
 }
 
 function botRoleForPlayer(boardState, playerId) {
@@ -373,7 +398,7 @@ function buildBotStrategy(boardState, player) {
     }
   }
 
-  return { danger, role, laneCenterX, teammateIntentX };
+  return { danger, role, laneCenterX, teammateIntentX, baseMetrics: currentMetrics };
 }
 
 function evaluateBotLanding(boardState, player, matrix, x, strategy) {
@@ -397,6 +422,12 @@ function evaluateBotLanding(boardState, player, matrix, x, strategy) {
   }
 
   const metrics = analyzeGrid(temp, boardState.cols, boardState.rows);
+  const base = strategy.baseMetrics;
+  const newHoles = Math.max(0, metrics.holes - base.holes);
+  const newBuried = Math.max(0, metrics.buriedHoleDepth - base.buriedHoleDepth);
+  const newDeep = Math.max(0, metrics.deepHoles - base.deepHoles);
+  const newPockets = Math.max(0, metrics.pocketHoles - base.pocketHoles);
+  const holesReduced = Math.max(0, base.holes - metrics.holes);
   const sideBias = Math.abs(x - (boardState.cols - matrix[0].length) / 2) * 0.2;
   const isBuilder = strategy.role === "builder";
   const isSafeMode = strategy.danger > 0.6;
@@ -405,10 +436,19 @@ function evaluateBotLanding(boardState, player, matrix, x, strategy) {
   let score =
     cleared * lineWeight -
     metrics.holes * (isSafeMode ? 13 : 10) -
+    metrics.buriedHoleDepth * (isSafeMode ? 1.75 : 1.15) -
+    metrics.deepHoles * (isSafeMode ? 4.5 : 3.1) -
+    metrics.pocketHoles * (isSafeMode ? 9.5 : 6.8) -
     metrics.aggregateHeight * (isSafeMode ? 0.95 : 0.72) -
     metrics.bumpiness * (isSafeMode ? 2.2 : 1.5) -
     metrics.maxHeight * (isSafeMode ? 2.6 : 1.65) -
     sideBias;
+
+  score -= newHoles * (isSafeMode ? 20 : 15);
+  score -= newBuried * (isSafeMode ? 2.8 : 1.9);
+  score -= newDeep * (isSafeMode ? 8.2 : 6.2);
+  score -= newPockets * (isSafeMode ? 18 : 13);
+  score += holesReduced * (isSafeMode ? 6.4 : 4.1);
 
   if (!isSafeMode && isBuilder) {
     score += metrics.nearFullRows * 4.4;

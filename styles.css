@@ -69,6 +69,17 @@ body {
   animation: drift 11s linear infinite alternate;
 }
 
+#titleScreen::after,
+#gameOverScreen::before {
+  content: "";
+  position: absolute;
+  inset: auto -15% -35% -15%;
+  height: 70%;
+  background: radial-gradient(circle at 50% 0%, rgba(93, 202, 255, 0.22), rgba(255, 120, 194, 0.12), transparent 70%);
+  filter: blur(34px);
+  pointer-events: none;
+}
+
 #titleScreen h1 {
   font-size: clamp(2rem, 5vw, 3.6rem);
   background: linear-gradient(90deg, #e9f4ff, #6fd0ff 35%, #ef7dd2 70%, #fff9b0);
@@ -76,6 +87,19 @@ body {
   background-clip: text;
   color: transparent;
   text-shadow: 0 0 28px rgba(109, 206, 255, 0.28);
+}
+
+.title-kicker {
+  display: inline-block;
+  border: 1px solid #4f87ad;
+  border-radius: 999px;
+  padding: 4px 10px;
+  background: rgba(23, 41, 57, 0.76);
+  color: #9fd5ff;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
 }
 
 .panel {
@@ -104,6 +128,11 @@ h2 {
 .subtitle {
   margin: 8px 0 14px;
   color: var(--muted);
+}
+
+#titleScreen .subtitle {
+  max-width: 56ch;
+  font-size: 1.02rem;
 }
 
 .grid-form {
@@ -272,8 +301,53 @@ canvas {
 
 .summary {
   display: grid;
-  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 10px;
   color: var(--muted);
+}
+
+.summary-item {
+  border: 1px solid #405b73;
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: linear-gradient(145deg, rgba(19, 32, 44, 0.9), rgba(15, 22, 34, 0.82));
+  color: #d3e3f2;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.gameover-head {
+  margin-bottom: 8px;
+}
+
+#gameOverScreen h1 {
+  font-size: clamp(2.1rem, 5.2vw, 3.4rem);
+  background: linear-gradient(90deg, #ffffff, #9fd8ff 45%, #f7afe6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+#gameOverScreen .subtitle {
+  border: 1px solid #4a647c;
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: rgba(16, 25, 39, 0.74);
+  color: #d7ebff;
+}
+
+#gameOverScreen[data-result="win"] .subtitle {
+  border-color: #3f8e75;
+  box-shadow: 0 0 22px rgba(57, 190, 150, 0.24);
+}
+
+#gameOverScreen[data-result="lose"] .subtitle {
+  border-color: #a94f64;
+  box-shadow: 0 0 22px rgba(235, 95, 122, 0.24);
+}
+
+#gameOverScreen[data-result="neutral"] .subtitle {
+  border-color: #536a82;
+  box-shadow: 0 0 18px rgba(108, 170, 227, 0.18);
 }
 
 .good {

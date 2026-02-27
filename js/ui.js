@@ -176,7 +176,15 @@ function renderNextPreviews(dom, gameState) {
 
 export function showGameOverSummary(dom, summary) {
   dom.resultHeadlineEl.textContent = summary.headline;
-  dom.summaryEl.innerHTML = summary.rows.map((row) => `<div>${row}</div>`).join("");
+  const headline = summary.headline.toLowerCase();
+  const resultType = headline.includes("wins")
+    ? "win"
+    : headline.includes("draw")
+      ? "neutral"
+      : "lose";
+  dom.gameOverScreenEl.dataset.result = resultType;
+
+  dom.summaryEl.innerHTML = summary.rows.map((row) => `<div class="summary-item">${row}</div>`).join("");
   showScreen(dom, "gameover");
 }
 
